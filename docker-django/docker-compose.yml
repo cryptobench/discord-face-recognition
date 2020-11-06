@@ -1,0 +1,47 @@
+version: '2'
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+services:
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: compose/django/Dockerfile
+  #   container_name: dz01
+  #   environment:
+  #     - VIRTUAL_HOST=localhost
+  #     - VIRTUAL_PORT=8000
+  #     - DJANGO_DEBUG=True
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   volumes:
+  #     - './src:/src'
+  #   expose:
+  #     - '8000'
+  #   links:
+  #     - redis
+  #   env_file:
+  #     - ./.envs/.django
+  adamdetecter:
+    build:
+      context: .
+      dockerfile: compose/discord/Dockerfile
+    container_name: adamdetector
+    depends_on:
+      - dbdjango
+    volumes:
+      - './src:/src'
+    env_file:
+      - ./.envs/.django
+  dbdjango:
+    build:
+      context: .
+      dockerfile: compose/postgres/Dockerfile
+    container_name: djangodb
+    env_file:
+      - ./.envs/.postgres
+    volumes:
+      - 'local_postgres_data:/var/lib/postgresql/data'
+      - 'local_postgres_data_backups:/backups'
+  
